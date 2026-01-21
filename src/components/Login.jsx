@@ -33,6 +33,11 @@ const Login = ({ onJoin }) => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 py-12 text-center relative overflow-hidden">
+            {/* CA Badge */}
+            <div className="absolute top-4 left-4 text-xs text-zinc-600 font-mono uppercase tracking-wider">
+                CA.UPDATING...
+            </div>
+
             {/* Background glow */}
             <div className="absolute inset-0 bg-gradient-to-b from-red-900/20 via-transparent to-transparent pointer-events-none" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[100px] pointer-events-none" />
@@ -85,8 +90,8 @@ const Login = ({ onJoin }) => {
                                 key={color.value}
                                 onClick={() => setSelectedColor(color.value)}
                                 className={`aspect-square rounded-sm transition-all ${selectedColor === color.value
-                                        ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110'
-                                        : 'hover:scale-105'
+                                    ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110'
+                                    : 'hover:scale-105'
                                     }`}
                                 style={{ backgroundColor: color.value }}
                                 title={color.name}
