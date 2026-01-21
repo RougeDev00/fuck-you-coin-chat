@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Smile } from 'lucide-react';
 import { format } from 'date-fns';
 import { supabase } from '../lib/supabase';
+
+const EMOJIS = ['🖕', '💀', '🔥', '😂', '🤡', '💩', '🤬', '😈', '👎', '🐍', '🤮', '💔', '😤', '🥱', '🤢', '😡'];
 
 const Chat = ({ username, userColor }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [error, setError] = useState(null);
     const [sending, setSending] = useState(false);
+    const [showEmojis, setShowEmojis] = useState(false);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -17,7 +20,7 @@ const Chat = ({ username, userColor }) => {
                 .from('messages')
                 .select('*')
                 .order('created_at', { ascending: true })
-                .limit(200);
+                .limit(50);
 
             if (error) {
                 console.error('Error fetching messages:', error);
@@ -36,7 +39,6 @@ const Chat = ({ username, userColor }) => {
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
                 setMessages((prev) => {
                     const updated = [...prev, payload.new];
-                    // Keep only last 50 messages to prevent DOM bloat
                     return updated.slice(-50);
                 });
             })
@@ -58,6 +60,7 @@ const Chat = ({ username, userColor }) => {
         if (!newMessage.trim() || sending) return;
 
         setSending(true);
+        setShowEmojis(false);
         const messageToSend = {
             username,
             content: newMessage.trim(),
@@ -79,12 +82,15 @@ const Chat = ({ username, userColor }) => {
         inputRef.current?.focus();
     };
 
-    // Generate a consistent color from username if no color saved
+    const addEmoji = (emoji) => {
+        setNewMessage((prev) => prev + emoji);
+        inputRef.current?.focus();
+    };
+
     const getMessageBg = (msg) => {
         if (msg.color) {
             return { backgroundColor: msg.color + '20', borderColor: msg.color };
         }
-        // Fallback for old messages without color
         return { backgroundColor: '#27272a', borderColor: '#3f3f46' };
     };
 
@@ -154,9 +160,32 @@ const Chat = ({ username, userColor }) => {
                 </div>
             )}
 
+            {/* Emoji Picker */}
+            {showEmojis && (
+                <div className="absolute bottom-20 left-3 right-3 bg-zinc-900 border border-zinc-800 p-2 rounded-sm grid grid-cols-8 gap-1 z-20">
+                    {EMOJIS.map((emoji) => (
+                        <button
+                            key={emoji}
+                            type="button"
+                            onClick={() => addEmoji(emoji)}
+                            className="text-xl p-2 hover:bg-zinc-800 rounded transition-colors"
+                        >
+                            {emoji}
+                        </button>
+                    ))}
+                </div>
+            )}
+
             {/* Input */}
             <div className="p-3 bg-zinc-950 border-t border-zinc-900">
                 <form onSubmit={handleSend} className="flex gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setShowEmojis(!showEmojis)}
+                        className={`p-3 border-2 transition-colors ${showEmojis ? 'bg-zinc-800 border-red-600' : 'bg-black border-zinc-800 hover:border-zinc-600'}`}
+                    >
+                        <Smile size={18} className="text-zinc-400" />
+                    </button>
                     <input
                         ref={inputRef}
                         type="text"
