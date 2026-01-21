@@ -34,7 +34,11 @@ const Chat = ({ username, userColor }) => {
         const subscription = supabase
             .channel('public:messages')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-                setMessages((prev) => [...prev, payload.new]);
+                setMessages((prev) => {
+                    const updated = [...prev, payload.new];
+                    // Keep only last 50 messages to prevent DOM bloat
+                    return updated.slice(-50);
+                });
             })
             .subscribe();
 
