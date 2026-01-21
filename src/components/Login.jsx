@@ -35,7 +35,7 @@ const Login = ({ onJoin }) => {
         <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 py-12 text-center relative overflow-hidden">
             {/* CA Badge */}
             <div className="absolute top-4 left-4 text-xs text-zinc-600 font-mono uppercase tracking-wider">
-                CA.UPDATING...
+                CA: UPDATING..
             </div>
 
             {/* Background glow */}
